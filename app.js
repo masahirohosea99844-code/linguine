@@ -154,7 +154,7 @@ function generateOverlayImage() {
     ctx.fillStyle = '#666';
     ctx.font = 'bold 20px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('✨ 今日の名言（迷言） ✨', 250, 80);
+    //ctx.fillText('✨ 今日の名言（迷言） ✨', 250, 80);
     
     // 5. スロットの文字を描写
     ctx.fillStyle = '#333';
