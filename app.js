@@ -177,9 +177,9 @@ function generateOverlayImage() {
     const overlayImg = document.getElementById('resultOverlay');
     overlayImg.src = imageDataUrl;
     
-    // ほんの少しだけ余韻を持たせてから（0.6秒後）、画像をパッと表示する
+    // ほんの少しだけ余韻を持たせてから（0.6秒後）、画像エリアをパッと表示する
     setTimeout(() => {
-        overlayImg.style.display = 'block';
+        document.getElementById('overlayArea').style.display = 'block'; // 👈 ここを書き換え
     }, 600);
 }
 
@@ -192,6 +192,9 @@ function closeOverlay() {
     
     // 次のスロットのために、画像の中身（URL）も一度空っぽにしておきます
     overlayImg.src = "";
+
+    document.getElementById('overlayArea').style.display = 'none'; // 👈 ここを書き換え
+    document.getElementById('resultOverlay').src = "";
     
     // ついでに、文字のピカピカ光る装飾（win-effect）もここで綺麗に消しておきます
     document.getElementById('displayFirst').classList.remove('win-effect');
@@ -239,4 +242,22 @@ function sendLogToBackend(text1, text2) {
     .catch(error => {
         console.error("ログの保存に失敗しました（動作には影響ありません）:", error);
     });
+}
+
+// 14. 【追加】確定した結果をX（Twitter）に文字でシェアする関数
+function shareOnX() {
+    const text1 = document.getElementById('displayFirst').textContent;
+    const text2 = document.getElementById('displaySecond').textContent;
+    
+    // 現在公開されているあなたのGitHub PagesのURLを自動で取得します
+    const appUrl = window.location.href;
+    
+    // Xに投稿したい文章を作成する（改行は %0A になります）
+    const shareText = `🎰 スロットの結果は...%0A%0A【 ${text1} 】%0A【 ${text2} 】%0A%0Aでした！みんなも回してみてね！%0A#Linguine %0A`;
+    
+    // Xの投稿画面を呼び出す魔法のURLを組み立てる
+    const xUrl = `https://twitter.com/intent/tweet?text=${shareText}&url=${encodeURIComponent(appUrl)}`;
+    
+    // 新しいタブ（ウィンドウ）でXの投稿画面を開く！
+    window.open(xUrl, '_blank');
 }

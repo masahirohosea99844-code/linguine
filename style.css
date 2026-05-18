@@ -137,3 +137,26 @@ button:disabled {
     color: #ff3366; /* アプリのテーマカラーのピンク */
     margin: 0 3px;
 }
+
+/* シェアボタンエリアの重なり設定 */
+.overlay-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    text-align: center;
+}
+
+/* Xシェアボタンのド派手なデザイン（黒ベースのXカラー） */
+#btnShareX {
+    margin-top: 15px;
+    background-color: #000000;
+    color: #ffffff;
+    font-weight: bold;
+    border: 2px solid #ffffff;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-size: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
