@@ -1,0 +1,139 @@
+/* 画面全体の基本設定 */
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background-color: #f0f2f5;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* 中身を真ん中に集める */
+}
+
+/* アプリ全体を囲む箱 */
+.app-container {
+    max-width: 500px;
+    width: 100%;
+    background-color: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    
+    /* 👇ここが超重要！画像を上に重ねるための「基準のピン」になります */
+    position: relative; 
+}
+
+/* スロットの文字が入るエリア */
+.slot-container {
+    border: 3px solid #333;
+    padding: 20px;
+    margin: 20px 0;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    background-color: #fffde7;
+}
+
+/* ボタンの基本スタイル */
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 5px;
+}
+
+button:hover {
+    background-color: #0056b3; /* マウスを乗せると少し暗くなる */
+}
+
+/* 👇後で生成する画像を、スロットの真上にピッタリ重ねるための設定 */
+.overlay-image {
+    position: absolute; /* 基準のピン（app-container）に合わせて自由に動かせる設定 */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* 画像をきれいに収める */
+    background-color: rgba(255, 255, 255, 0.95); /* 後ろをうっすら透けさせる */
+    z-index: 10; /* 数字が大きいほど手前に表示される（手前のレイヤーにする） */
+    display: none; /* 最初は非表示にしておく */
+}
+
+/* 縦に並んだスロットの文字の見た目 */
+.slot-row {
+    margin: 10px 0;
+    word-wrap: break-word;
+    
+    /* 👇【追加】1行あたりの最低の高さを「70ピクセル」に固定して、フレームの伸び縮みを防ぐ */
+    min-height: 70px; 
+    
+    /* 👇【追加】文字が上下の真ん中に綺麗に配置されるようにする魔法の呪文 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 確定した時に文字を大きく動かすアニメーション（ズーム＆回転） */
+@keyframes slotWin {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3) rotate(3deg); color: #ff0077; } /* 途中で1.3倍に大きくなって少し傾く */
+    100% { transform: scale(1) rotate(0deg); }
+}
+
+/* 確定演出をオンにした時に適用されるスタイル */
+.win-effect {
+    animation: slotWin 0.5s ease-in-out; /* 0.5秒かけて上のアニメーションを実行する */
+    color: #ff3366; /* 文字をド派手なピンク系にする */
+    text-shadow: 0 0 10px #fff, 0 0 20px #ff0055, 0 0 30px #ff0055; /* 文字の周りをネオンみたいに光らせる */
+}
+
+/* コントロールエリア全体を中央揃えにする */
+.control-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+/* チェックボックスの並びを中央揃えにする */
+.checkbox-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* チェックボックス同士の間隔 */
+    margin-bottom: 15px;
+}
+
+/* ボタンの並びを中央揃えにする */
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* 👇【重要】ボタンがグレーアウト（disabled）した時の見た目 */
+button:disabled {
+    background-color: #cccccc !important;
+    color: #666666 !important;
+    cursor: not-allowed; /* マウスを乗せると禁止マークになる */
+}
+
+/* カウンターエリアの見た目 */
+.counter-container {
+    margin-top: 15px;
+    font-size: 16px;
+    color: #555555;
+    font-weight: bold;
+    background-color: #f0f0f0;
+    padding: 5px 15px;
+    border-radius: 20px; /* 角を丸くして可愛いカプセル型にする */
+}
+
+/* 数字の部分だけ少し強調する */
+#totalSpins {
+    font-size: 20px;
+    color: #ff3366; /* アプリのテーマカラーのピンク */
+    margin: 0 3px;
+}

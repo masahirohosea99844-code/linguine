@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linguine（リンギーネ）</title>
+    <!-- 👇 先ほど作った style.css を読み込んでデザインを適用します -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- アプリ全体を囲む箱（ここに画像が上に重なります） -->
+    <div class="app-container">
+        
+        <h1>Linguine</h1>
+        <p></p>
+
+        <!-- スロットの文字が表示されるエリア -->
+        <div class="slot-container">
+            <div id="displayFirst" class="slot-row">???</div>
+            <div id="displaySecond" class="slot-row">???</div>
+        </div>
+
+        <!-- コントロールエリア（ボタンやチェックボックス） -->
+        <div class="control-area">
+            <div class="checkbox-container">
+                <label>
+                    <input type="checkbox" id="lockFirst" onchange="checkLockStatus()"> 前半を固定
+                </label>
+                <label>
+                    <input type="checkbox" id="lockSecond" onchange="checkLockStatus()"> 後半を固定
+                </label>
+            </div>
+            
+            <div class="button-container">
+                <button id="btnStart" onclick="startSlot()" disabled>データを読み込み中...</button>
+                <button id="btnStop" onclick="stopSlot()" disabled>ストップ！</button>
+            </div>
+            <div class="counter-container">
+                <p>📊 総回転数: <span id="totalSpins">0</span> 回</p>
+            </div>
+        </div>
+
+        <!-- 👇 将来ここに、生成されたおもしろ画像がパッと重なって表示されます（今は非表示） -->
+        <img id="resultOverlay" class="overlay-image" src="" alt="生成された画像" onclick="closeOverlay()">
+
+    </div>
+
+    <!-- 👇 先ほど作った app.js を読み込んで動きを与えます -->
+    <script src="app.js"></script>
+</body>
+</html>
