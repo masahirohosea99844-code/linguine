@@ -22,6 +22,10 @@ body {
     position: relative; 
 }
 
+.app-container h1 {
+    text-align: center;
+}
+
 /* スロットの文字が入るエリア */
 .slot-container {
     border: 3px solid #333;
@@ -138,7 +142,7 @@ button:disabled {
     margin: 0 3px;
 }
 
-/* シェアボタンエリアの重なり設定 */
+/* 画像とボタンを包む大きな箱の設定 */
 .overlay-container {
     position: fixed;
     top: 50%;
@@ -146,17 +150,37 @@ button:disabled {
     transform: translate(-50%, -50%);
     z-index: 1000;
     text-align: center;
+    background-color: rgba(255, 255, 255, 0.95); /* 👇背景を少し白くして、スロットが透けないようにします */
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
-/* Xシェアボタンのド派手なデザイン（黒ベースのXカラー） */
+/* 👇【超重要】消えてしまっていた画像サイズをビシッと固定します */
+.overlay-image {
+    position: static;
+    display: block;
+    width: 300px;  /* スマホで見やすい300pxの正方形にします */
+    height: 300px;
+    max-width: 80vw;
+    max-height: 80vw;
+    margin: 0 auto;
+    object-fit: contain;
+    border-radius: 8px;
+    cursor: pointer; /* マウスを乗せると指マークになる */
+}
+
+/* Xシェアボタンのデザイン */
 #btnShareX {
     margin-top: 15px;
     background-color: #000000;
     color: #ffffff;
     font-weight: bold;
-    border: 2px solid #ffffff;
-    padding: 10px 20px;
+    border: none;
+    padding: 12px 24px;
     border-radius: 25px;
     font-size: 16px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    cursor: pointer;
+    width: 100%; /* ボタンの横幅を画像に合わせる */
 }
+

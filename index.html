@@ -41,11 +41,10 @@
             </div>
         </div>
 
-        <!-- 👇 将来ここに、生成されたおもしろ画像がパッと重なって表示されます（今は非表示） -->
-        <div id="overlayArea" class="overlay-container" style="display: none;">
-            <img id="resultOverlay" class="overlay-image" src="" alt="生成された画像" onclick="closeOverlay()">
+    <div id="overlayArea" class="overlay-container" style="display: none;" onclick="closeOverlay()">
+            <img id="resultOverlay" class="overlay-image" src="" alt="生成された画像">
             <br>
-            <button id="btnShareX" onclick="shareOnX()">📱 この結果をXでシェア！</button>
+            <button id="btnShareX" onclick="event.stopPropagation(); shareOnX()">この結果をXでシェア！</button>
         </div>
     </div>
 

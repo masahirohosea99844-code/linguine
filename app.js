@@ -127,79 +127,58 @@ function stopSlot() {
 
 // 10. 確定した文字から画像を自動生成し、画面に重ねて表示する関数
 function generateOverlayImage() {
-    // 画面に表示されている現在の言葉を取得する
     const text1 = document.getElementById('displayFirst').textContent;
     const text2 = document.getElementById('displaySecond').textContent;
     
-    // もしスロットがまだ回っていなければ、画像は作らない
     if (text1 === "???" || text2 === "???") return;
 
-    // 1. 脳内に「見えないお絵かきキャンバス（Canvas）」を1枚用意する
+    // 1. キャンバスの作成
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    
-    // 画像のサイズを決定（縦長スマホに合わせた500px × 500pxの正方形）
     canvas.width = 500;
     canvas.height = 500;
     
-    // 2. 背景を塗りつぶす（ちょっと豪華なグラデーションにします）
+    // 2. 背景グラデーション
     const gradient = ctx.createLinearGradient(0, 0, 0, 500);
-    gradient.addColorStop(0, '#ffefe5'); // 上は薄いピンクオレンジ
-    gradient.addColorStop(1, '#fffde7'); // 下は薄い黄色
+    gradient.addColorStop(0, '#ffefe5');
+    gradient.addColorStop(1, '#fffde7');
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, 500, 500);
     
-    // 3. 飾り枠（フレーム）を描く
+    // 3. 飾り枠
     ctx.strokeStyle = '#ff3366';
     ctx.lineWidth = 10;
     ctx.strokeRect(15, 15, 470, 470);
     
-    // 4. タイトル文字を描く（Linguineのロゴ風）
+    // 4. タイトル
     ctx.fillStyle = '#666';
     ctx.font = 'bold 20px sans-serif';
     ctx.textAlign = 'center';
-    //ctx.fillText('✨  ✨', 250, 80);
+    ctx.fillText('✨ 今日の名言（迷言） ✨', 250, 80);
     
-    // 5. スロットの言葉をドーン！と真ん中に描く
+    // 5. スロットの文字を描写
     ctx.fillStyle = '#333';
     ctx.font = 'bold 36px sans-serif';
-    
-    // 前半の言葉を描く（Y座標：220の位置）
     ctx.fillText(text1, 250, 220);
-    
-    // 後半の言葉を描く（Y座標：320の位置）
     ctx.fillText(text2, 250, 320);
     
-    // 6. 出来上がったお絵かきデータを「画像（PNGデータ）」に変換する
+    // 6. 画像データURLの生成
     const imageDataUrl = canvas.toDataURL('image/png');
     
-    // 7. HTMLにある画像タグに、作ったデータを流し込んで画面に表示する！
+    // 7. 【ここを修正】一瞬の隙も与えず、データを流し込んでから即座に全体を表示する！
     const overlayImg = document.getElementById('resultOverlay');
-    overlayImg.src = imageDataUrl;
+    overlayImg.src = imageDataUrl; // 先に画像をセット！
     
-    // ほんの少しだけ余韻を持たせてから（0.6秒後）、画像エリアをパッと表示する
-    setTimeout(() => {
-        document.getElementById('overlayArea').style.display = 'block'; // 👈 ここを書き換え
-    }, 600);
+    // 即座に大きな箱を表示！
+    document.getElementById('overlayArea').style.display = 'block';
 }
 
 // 11. 表示された画像を非表示にして、次のスロットのためにリセットする関数
 function closeOverlay() {
-    const overlayImg = document.getElementById('resultOverlay');
-    
-    // 画像をパッと非表示（none）にします
-    overlayImg.style.display = 'none';
-    
-    // 次のスロットのために、画像の中身（URL）も一度空っぽにしておきます
-    overlayImg.src = "";
-
-    document.getElementById('overlayArea').style.display = 'none'; // 👈 ここを書き換え
+    document.getElementById('overlayArea').style.display = 'none';
     document.getElementById('resultOverlay').src = "";
-    
-    // ついでに、文字のピカピカ光る装飾（win-effect）もここで綺麗に消しておきます
     document.getElementById('displayFirst').classList.remove('win-effect');
     document.getElementById('displaySecond').classList.remove('win-effect');
-    // 画像を閉じた後、ボタンの状態をチェックボックスに合わせて正しく戻す
     checkLockStatus();
     document.getElementById('btnStop').disabled = true;
 }
@@ -253,7 +232,7 @@ function shareOnX() {
     const appUrl = window.location.href;
     
     // Xに投稿したい文章を作成する（改行は %0A になります）
-    const shareText = `🎰 スロットの結果は...%0A%0A【 ${text1} 】%0A【 ${text2} 】%0A%0Aでした！みんなも回してみてね！%0A#Linguine %0A`;
+    const shareText = `%0A%0A【 ${text1} 】%0A【 ${text2} 】%0A%0A%0A#Linguine %0A`;
     
     // Xの投稿画面を呼び出す魔法のURLを組み立てる
     const xUrl = `https://twitter.com/intent/tweet?text=${shareText}&url=${encodeURIComponent(appUrl)}`;
