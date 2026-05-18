@@ -156,14 +156,14 @@ button:disabled {
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
-/* 👇【超重要】消えてしまっていた画像サイズをビシッと固定します */
+/* 👇【超重要】画像サイズを500pxの大きな正方形にパワーアップ！ */
 .overlay-image {
     position: static;
     display: block;
-    width: 300px;  /* スマホで見やすい300pxの正方形にします */
-    height: 300px;
-    max-width: 80vw;
-    max-height: 80vw;
+    width: 500px;  /* 300px から 500px に大きくしました！ */
+    height: 500px; /* 300px から 500px に大きくしました！ */
+    max-width: 90vw;  /* スマホの画面からはみ出さないための設定です */
+    max-height: 70vh; /* 縦が長すぎてシェアボタンが画面外に消えないための設定です */
     margin: 0 auto;
     object-fit: contain;
     border-radius: 8px;

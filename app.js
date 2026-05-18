@@ -200,26 +200,20 @@ function checkLockStatus() {
 // 13. スロットの結果を裏でログに記録する関数
 function sendLogToBackend(text1, text2) {
     const resultString = `【確定結果】${text1} × ${text2}`;
-    console.log("🚀 ログ送信の準備完了（通信量はごくわずかです）:", resultString);
+    console.log("🚀 ログ送信の準備完了:", resultString);
 
-    // 👇 【確実版】GASのdoPostが100%受け取れる「フォーム形式」にデータを梱包します
-    const formData = new URLSearchParams();
-    formData.append('log', resultString); // GAS側に「log」という名前で文字列を渡す
+    // 👇 URLの末尾にログの文字をダイレクトにくっつけて、セキュリティの壁をすり抜けます！
+    const logUrl = `${API_URL}?log=${encodeURIComponent(resultString)}`;
 
-    fetch(API_URL, {
-        method: "POST",
-        mode: "no-cors", // パソコンのローカルファイルからでもCORSの壁を突破する魔法
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded" // フォーム形式であることを明示
-        },
-        body: formData.toString() // 梱包したデータを送信
+    fetch(logUrl, {
+        method: "GET",       // POST から GET に変更して確実に届けます
+        mode: "no-cors"      // パソコンからでもエラーを出さないための魔法
     })
-    .then(response => {
-        // mode: "no-cors" のため中身の判定はできませんが、送信処理自体はここで完了します
-        console.log("📊 ログデータをフォーム形式でGASに送信しました！");
+    .then(() => {
+        console.log("📊 ログデータをGASに向けて発射しました！");
     })
     .catch(error => {
-        console.error("ログの保存に失敗しました（動作には影響ありません）:", error);
+        console.error("ログの送信に失敗しました:", error);
     });
 }
 
