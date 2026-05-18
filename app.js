@@ -33,10 +33,10 @@ function fetchData() {
             
             console.log("データの読み込みが成功しました！", data);
             
-            // 👇【ここを追加！】データが届いたので、スタートボタンを活性化（有効化）する
-            const btnStart = document.getElementById('btnStart');
-            btnStart.disabled = false;           // グレーアウトを解除
-            btnStart.textContent = "スタート！"; // 文字を元に戻す
+            // データが届いたので、統合ボタンを活性化（有効化）する
+            const btnSlot = document.getElementById('btnSlot');
+            btnSlot.disabled = false;          // グレーアウトを解除
+            btnSlot.textContent = "スタート！"; // 文字をスロット開始用に変更
             
             // 念のため、チェックボックスが最初から両方オンだった場合のガードも走らせる
             checkLockStatus();
@@ -46,7 +46,7 @@ function fetchData() {
             alert("データの読み込みに失敗しました。URLが正しいか確認してください。");
             
             // エラーで止まってしまった場合は、ボタンの文字をエラー表示に変える
-            document.getElementById('btnStart').textContent = "読み込み失敗";
+            document.getElementById('btnSlot').textContent = "読み込み失敗";
         });
 }
 
@@ -54,12 +54,32 @@ function fetchData() {
 let timerFirst = null;
 let timerSecond = null;
 
-// 6. 「スタート」ボタンを押したときの処理
-function startSlot() {
-    // スタート連打や両方固定でのバグを防ぐため、ボタンの状態を切り替える
-    document.getElementById('btnStart').disabled = true;
-    document.getElementById('btnStop').disabled = false;
+// 👇【ここを追加！】スロットが動いているかどうかを記録するフラグ（false = 止まっている）
+let isSpinning = false;
 
+// 👇【ここを追加！】ボタンが押されたときに、スタートかストップかを自動で判断して切り替える関数
+function toggleSlot() {
+    const btnSlot = document.getElementById('btnSlot');
+
+    if (!isSpinning) {
+        // ① 止まっている時に押されたら 👉 スロットをスタートさせる！
+        isSpinning = true;
+        btnSlot.textContent = "ストップ！"; // ボタンの見た目をストップに変える
+        btnSlot.classList.add('running');  // (お好みで)動いている時のCSSデザイン用
+        
+        startSlot(); // 今まで使っていたスタートの処理を呼び出す
+    } else {
+        // ② 動いている時に押されたら 👉 スロットをストップさせる！
+        isSpinning = false;
+        btnSlot.textContent = "スタート！"; // ボタンの見た目をスタートに戻す
+        btnSlot.classList.remove('running');
+        
+        stopSlot(); // 今まで使っていたストップの処理を呼び出す
+    }
+}
+
+// 6. 「スタート」の内部処理（ボタンの制御コードを削除しました）
+function startSlot() {
     document.getElementById('displayFirst').classList.remove('win-effect');
     document.getElementById('displaySecond').classList.remove('win-effect');
 
@@ -97,11 +117,8 @@ function stopSlotSecond() {
     timerSecond = null;
 }
 
-// 9. 「ストップ」ボタンを押したときの処理（ド派手演出付き！）
+// 9. 「ストップ」の内部処理（ボタンの制御コードを削除しました）
 function stopSlot() {
-    document.getElementById('btnStart').disabled = false;
-    document.getElementById('btnStop').disabled = true;
-    
     checkLockStatus();
     stopSlotFirst();
     stopSlotSecond();
@@ -117,7 +134,6 @@ function stopSlot() {
         displaySecond.classList.add('win-effect');
         generateOverlayImage();
         
-        // 👇【ここを追加！】ストップが押されたら、カウントを1増やして画面を書き換える
         spinCount++;
         document.getElementById('totalSpins').textContent = spinCount;
         
@@ -132,42 +148,107 @@ function generateOverlayImage() {
     
     if (text1 === "???" || text2 === "???") return;
 
-    // 1. キャンバスの作成
+    // --- 1. 文字数に合わせてキャンバスの横幅を自動計算 ---
+    const calcCanvas = document.createElement('canvas');
+    const calcCtx = calcCanvas.getContext('2d');
+    calcCtx.font = '900 80px "Noto Sans JP", "Arial Black", "Impact", sans-serif';
+    
+    const width1 = calcCtx.measureText(text1).width;
+    const width2 = calcCtx.measureText(text2).width;
+    const maxTextWidth = Math.max(width1, width2);
+    
+    let canvasWidth = 500;
+    if (maxTextWidth + 60 > 500) {
+        canvasWidth = Math.floor(maxTextWidth + 60);
+    }
+    
+    const canvasHeight = 500;
+
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    canvas.width = 500;
-    canvas.height = 500;
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
     
-    // 2. 背景グラデーション
-    const gradient = ctx.createLinearGradient(0, 0, 0, 500);
-    gradient.addColorStop(0, '#ffefe5');
-    gradient.addColorStop(1, '#fffde7');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, 500, 500);
+    // 2. パチンコ風・ド派手な背景（黒〜赤〜黒の激しいグラデーション）
+    const bgGradient = ctx.createLinearGradient(0, 0, 0, canvasHeight);
+    bgGradient.addColorStop(0, '#110000');
+    bgGradient.addColorStop(0.3, '#440000');
+    bgGradient.addColorStop(0.5, '#aa0000');
+    bgGradient.addColorStop(0.7, '#440000');
+    bgGradient.addColorStop(1, '#110000');
+    ctx.fillStyle = bgGradient;
+    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
     
-    // 3. 飾り枠
-    ctx.strokeStyle = '#ff3366';
-    ctx.lineWidth = 10;
-    ctx.strokeRect(15, 15, 470, 470);
+    // 3. ギザギザ・稲妻風の飾り枠（ゴールド）
+    ctx.strokeStyle = '#ffcc00';
+    ctx.lineWidth = 14;
+    ctx.strokeRect(15, 15, canvasWidth - 30, canvasHeight - 30);
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 4;
+    ctx.strokeRect(22, 22, canvasWidth - 44, canvasHeight - 44);
     
-    // 4. タイトル
-    ctx.fillStyle = '#666';
-    ctx.font = 'bold 20px sans-serif';
-    ctx.textAlign = 'center';
-    //ctx.fillText('✨ 今日の名言（迷言） ✨', 250, 80);
+    // 4. パチンコ風の文字を描画するインナールーチン
+    function drawPachinkoText(text, x, y) {
+        ctx.save();
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        const fontSize = 80;
+        ctx.font = `900 ${fontSize}px "Noto Sans JP", "Arial Black", "Impact", sans-serif`;
+
+        // --- 重厚な多層フチ取り描画（カラー微調整版） ---
+        
+        // 🌟1層目：一番外側のフチを「黒」から「白」に変更！
+        // これで暗い背景から文字の形がクッキリ浮き出ます！
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = fontSize * 0.45; // 少しだけ太くして存在感をアップ
+        ctx.lineJoin = 'miter';
+        ctx.strokeText(text, x, y);
+
+        // 2層目：外側のフチ（赤・オレンジのグラデーション）
+        // 白フチの内側に入るため、引き締め役として機能します
+        const borderGrad = ctx.createLinearGradient(x, y - fontSize/2, x, y + fontSize/2);
+        borderGrad.addColorStop(0, '#ff9500');
+        borderGrad.addColorStop(0.5, '#c70000');
+        borderGrad.addColorStop(1, '#220000'); // 底辺はさらに濃くして立体感を強調
+        ctx.strokeStyle = borderGrad;
+        ctx.lineWidth = fontSize * 0.28;
+        ctx.strokeText(text, x, y);
+
+        // 3層目：文字の斜め下の影（境界線をさらにクッキリさせるため黒に変更）
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = fontSize * 0.12;
+        ctx.strokeText(text, x + (fontSize * 0.05), y + (fontSize * 0.05));
+
+        // 4層目：メインカラー（ゴールド）
+        const textGrad = ctx.createLinearGradient(x, y - fontSize/2, x, y + fontSize/2);
+        textGrad.addColorStop(0, '#ffffff');
+        textGrad.addColorStop(0.25, '#ffff00');
+        textGrad.addColorStop(0.75, '#ffaa00');
+        textGrad.addColorStop(1, '#ff4400');
+
+        ctx.fillStyle = textGrad;
+        ctx.fillText(text, x, y);
+
+        ctx.restore();
+    }
     
-    // 5. スロットの文字を描写
-    ctx.fillStyle = '#333';
-    ctx.font = 'bold 36px sans-serif';
-    ctx.fillText(text1, 250, 220);
-    ctx.fillText(text2, 250, 320);
+    // 5. 新しいキャンバスの中心を狙ってドカンと描画
+    const centerX = canvasWidth / 2;
+    drawPachinkoText(text1, centerX, 175);
+    
+    // 真ん中の繋ぎ演出
+    ctx.save();
+    ctx.restore();
+
+    drawPachinkoText(text2, centerX, 325);
     
     // 6. 画像データURLの生成
     const imageDataUrl = canvas.toDataURL('image/png');
     
-    // 7. 【ここを修正】一瞬の隙も与えず、データを流し込んでから即座に全体を表示する！
+    // 7. データを流し込んでから即座に全体を表示する
     const overlayImg = document.getElementById('resultOverlay');
-    overlayImg.src = imageDataUrl; // 先に画像をセット！
+    overlayImg.src = imageDataUrl;
     
     // 即座に大きな箱を表示！
     document.getElementById('overlayArea').style.display = 'block';
@@ -187,13 +268,12 @@ function closeOverlay() {
 function checkLockStatus() {
     const isFirstLocked = document.getElementById('lockFirst').checked;
     const isSecondLocked = document.getElementById('lockSecond').checked;
-    const btnStart = document.getElementById('btnStart');
+    const btnSlot = document.getElementById('btnSlot'); // 名前をbtnSlotに変更
     
-    // 両方にチェックが入っていたら、スタートボタンをグレーアウトする
     if (isFirstLocked && isSecondLocked) {
-        btnStart.disabled = true;
+        btnSlot.disabled = true;
     } else {
-        btnStart.disabled = false;
+        btnSlot.disabled = false;
     }
 }
 
@@ -226,7 +306,7 @@ function shareOnX() {
     const appUrl = window.location.href;
     
     // Xに投稿したい文章を作成する（改行は %0A になります）
-    const shareText = `%0A%0A【 ${text1} 】%0A【 ${text2} 】%0A%0A%0A#Linguine %0A`;
+    const shareText = `%0A%0A${text1}%0A${text2}%0A%0A%0A#Linguine %0A`;
     
     // Xの投稿画面を呼び出す魔法のURLを組み立てる
     const xUrl = `https://twitter.com/intent/tweet?text=${shareText}&url=${encodeURIComponent(appUrl)}`;
